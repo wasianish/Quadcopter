@@ -24,7 +24,7 @@ uint32_t funcClocks[3] = {10000, 20000, 50000};
 uint32_t funcCounters[3] = {0, 0, 0};
 
 // Raw data from the mpu
-int32_t AcX, AcY, AcZ, GyX, GyY, GyZ;
+int32_t AcX, AcY, AcZ, GyX, GyY, GyZ, temp;
 // The time between ping and response
 uint32_t pingTime;
 // maxPingTime + micros()
@@ -156,7 +156,16 @@ void setupMPU6050() {
 // Currently only needs to read the accel and gyro
 void readMPU6050() {
   Wire.beginTransmission(MPU6050);
-  
+  Wire.write(0x3B);
+  Wire.requestFrom(MPU6050,14,true);
+  AcX = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  AcY = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  AcZ = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  temp = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  GyX = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  GyY = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  GyZ = (uint32_t)(Wire.read()) << 8 + Wire.read();
+  Wire.endTransmission(true);
 }
 
 void calcVelAndRot() {
